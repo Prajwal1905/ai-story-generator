@@ -1,12 +1,12 @@
 from typing import TypedDict
 from langgraph.graph import StateGraph, END
-from langchain_anthropic import ChatAnthropic
+from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
-from backend.config import ANTHROPIC_API_KEY
+from backend.config import OPENAI_API_KEY
 from backend.rag.retriever import retrieve_similar_stories
 import os
 
-os.environ["ANTHROPIC_API_KEY"] = ANTHROPIC_API_KEY
+os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
 # Define agent state
 class StoryState(TypedDict):
@@ -26,7 +26,7 @@ def rag_node(state: StoryState) -> StoryState:
 
 # Node 2 — Generate script
 def generate_node(state: StoryState) -> StoryState:
-    llm = ChatAnthropic(model="claude-3-haiku-20240307", max_tokens=1500)
+    llm = ChatOpenAI(model="gpt-3.5-turbo", max_tokens=1500)
     prompt = ChatPromptTemplate.from_template("""
 You are a microdrama script writer for an Indian audio platform like Kuku FM.
 
@@ -74,7 +74,7 @@ SCENE 3:
 
 # Node 3 — Reflection (ReAct pattern)
 def reflect_node(state: StoryState) -> StoryState:
-    llm = ChatAnthropic(model="claude-3-haiku-20240307", max_tokens=500)
+    llm = ChatOpenAI(model="gpt-3.5-turbo", max_tokens=500)
     prompt = ChatPromptTemplate.from_template("""
 You are a script quality reviewer.
 
@@ -100,7 +100,7 @@ If it needs improvement respond with: IMPROVE: [specific feedback]
 
 # Node 4 — Improve script if needed
 def improve_node(state: StoryState) -> StoryState:
-    llm = ChatAnthropic(model="claude-3-haiku-20240307", max_tokens=1500)
+    llm = ChatOpenAI(model="gpt-3.5-turbo", max_tokens=1500)
     prompt = ChatPromptTemplate.from_template("""
 Improve this microdrama script based on the feedback.
 
