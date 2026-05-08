@@ -1,4 +1,4 @@
-from typing import TypedDict, Annotated
+from typing import TypedDict
 from langgraph.graph import StateGraph, END
 from langchain_anthropic import ChatAnthropic
 from langchain.prompts import ChatPromptTemplate
@@ -18,9 +18,6 @@ class StoryState(TypedDict):
     feedback: str
     iteration: int
 
-# Initialize LLM
-llm = ChatAnthropic(model="claude-3-haiku-20240307", max_tokens=1500)
-
 # Node 1 — RAG retrieval
 def rag_node(state: StoryState) -> StoryState:
     similar = retrieve_similar_stories(state["topic"])
@@ -29,6 +26,7 @@ def rag_node(state: StoryState) -> StoryState:
 
 # Node 2 — Generate script
 def generate_node(state: StoryState) -> StoryState:
+    llm = ChatAnthropic(model="claude-3-haiku-20240307", max_tokens=1500)
     prompt = ChatPromptTemplate.from_template("""
 You are a microdrama script writer for an Indian audio platform like Kuku FM.
 
@@ -64,7 +62,6 @@ SCENE 2:
 SCENE 3:
 [dialogue]
 """)
-    
     chain = prompt | llm
     result = chain.invoke({
         "topic": state["topic"],
@@ -77,6 +74,7 @@ SCENE 3:
 
 # Node 3 — Reflection (ReAct pattern)
 def reflect_node(state: StoryState) -> StoryState:
+    llm = ChatAnthropic(model="claude-3-haiku-20240307", max_tokens=500)
     prompt = ChatPromptTemplate.from_template("""
 You are a script quality reviewer.
 
@@ -91,7 +89,6 @@ Script:
 If the script is good respond with: APPROVED
 If it needs improvement respond with: IMPROVE: [specific feedback]
 """)
-    
     chain = prompt | llm
     result = chain.invoke({
         "topic": state["topic"],
@@ -103,6 +100,7 @@ If it needs improvement respond with: IMPROVE: [specific feedback]
 
 # Node 4 — Improve script if needed
 def improve_node(state: StoryState) -> StoryState:
+    llm = ChatAnthropic(model="claude-3-haiku-20240307", max_tokens=1500)
     prompt = ChatPromptTemplate.from_template("""
 Improve this microdrama script based on the feedback.
 
@@ -114,7 +112,6 @@ Feedback:
 
 Write an improved version keeping the same format.
 """)
-    
     chain = prompt | llm
     result = chain.invoke({
         "script": state["script"],
@@ -123,7 +120,7 @@ Write an improved version keeping the same format.
     state["script"] = result.content
     return state
 
-# Conditional edge — should we improve or finish?
+# Conditional edge
 def should_improve(state: StoryState) -> str:
     if state["iteration"] >= 2:
         return "end"
@@ -134,12 +131,10 @@ def should_improve(state: StoryState) -> str:
 # Build LangGraph
 def build_graph():
     graph = StateGraph(StoryState)
-    
     graph.add_node("rag", rag_node)
     graph.add_node("generate", generate_node)
     graph.add_node("reflect", reflect_node)
     graph.add_node("improve", improve_node)
-    
     graph.set_entry_point("rag")
     graph.add_edge("rag", "generate")
     graph.add_edge("generate", "reflect")
@@ -148,7 +143,6 @@ def build_graph():
         "end": END
     })
     graph.add_edge("improve", END)
-    
     return graph.compile()
 
 # Main function called from routes
