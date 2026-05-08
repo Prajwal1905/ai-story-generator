@@ -5,18 +5,11 @@ from langchain.prompts import ChatPromptTemplate
 from backend.config import OPENAI_API_KEY
 from backend.rag.retriever import retrieve_similar_stories
 import os
+from backend.agent.state import StoryState
 
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
-# Define agent state
-class StoryState(TypedDict):
-    topic: str
-    genre: str
-    research: str
-    similar_stories: str
-    script: str
-    feedback: str
-    iteration: int
+
 
 # Node 1 — RAG retrieval
 def rag_node(state: StoryState) -> StoryState:

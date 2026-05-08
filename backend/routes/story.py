@@ -7,6 +7,7 @@ from backend.config import DATABASE_URL
 from backend.db.crud import save_story, get_all_stories, get_story_by_id
 from backend.agent.researcher import research_topic
 from backend.agent.generator import generate_script
+from backend.agent.multi_agent import run_multi_agent
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -27,11 +28,9 @@ class StoryRequest(BaseModel):
 @router.post("/generate-story")
 async def generate_story(request: StoryRequest, db: Session = Depends(get_db)):
     try:
-        research = research_topic(request.topic)
-        script = generate_script(
+        script = run_multi_agent(
             topic=request.topic,
-            genre=request.genre,
-            research=research
+            genre=request.genre
         )
         story = save_story(
             db=db,
@@ -48,7 +47,7 @@ async def generate_story(request: StoryRequest, db: Session = Depends(get_db)):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
+    
 @router.get("/stories")
 def get_stories(db: Session = Depends(get_db)):
     stories = get_all_stories(db)
