@@ -1,0 +1,27 @@
+[
+  {
+    "topic": "heartbreak",
+    "genre": "drama",
+    "script": "Scene 1\nRiya: I thought we had something real.\nArjun: We did. But real things break too.\nRiya: Then why does it still hurt?\nArjun: Because it mattered."
+  },
+  {
+    "topic": "ambition",
+    "genre": "drama",
+    "script": "Scene 1\nNeha: You chose work over us. Again.\nRahul: I am doing this FOR us.\nNeha: No. You are doing this for yourself.\nRahul: [silence]"
+  },
+  {
+    "topic": "friendship",
+    "genre": "comedy",
+    "script": "Scene 1\nSam: You ate my lunch AGAIN?\nVikram: I was going to replace it!\nSam: With what? Another excuse?\nVikram: ...A samosa?"
+  },
+  {
+    "topic": "loneliness",
+    "genre": "drama",
+    "script": "Scene 1\nMaya: Do you ever feel invisible?\nDev: Every single day.\nMaya: What do you do?\nDev: I talk to strangers on buses. Like you."
+  },
+  {
+    "topic": "success",
+    "genre": "drama",
+    "script": "Scene 1\nPriya: We made it.\nAnand: Did we? Look at what it cost us.\nPriya: Everything.\nAnand: Was it worth it?\nPriya: Ask me tomorrow."
+  }
+]
